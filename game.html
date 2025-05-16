@@ -14,7 +14,7 @@
       height: 100%;
     }
   </style>
-  <!-- Three.js (required by Panolens) -->
+  <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
   <!-- Panolens.js -->
   <script src="https://cdn.jsdelivr.net/npm/panolens@0.12.0/build/panolens.min.js"></script>
@@ -24,12 +24,27 @@
 
   <script>
     const panorama = new PANOLENS.ImagePanorama("hawker.jpg");
+
+    // Create the hotspot
+    const hotspot = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info); // Size, icon
+    hotspot.position.set(5000, 0, 0); // X, Y, Z position inside the sphere
+    hotspot.addHoverText("Click to learn about Hawker Culture");
+
+    // Optional: action when clicked
+    hotspot.addEventListener('click', function () {
+      alert("Hawker culture is part of Singapore's heritage!");
+      // Or you could redirect: window.location.href = "https://example.com";
+    });
+
+    panorama.add(hotspot); // Add hotspot to the panorama
+
     const viewer = new PANOLENS.Viewer({
       container: document.querySelector("#container"),
       autoRotate: true,
       autoRotateSpeed: 0.5,
       controlBar: true
     });
+
     viewer.add(panorama);
   </script>
 </body>

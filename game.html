@@ -1,65 +1,114 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spot the Modern Item - Singapore Edition</title>
+  <title>360° Virtual Tour - Hawker Centre</title>
   <style>
-    body {
+    body, html {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
       font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f0f0f0;
     }
-    .container {
-      position: relative;
-      display: inline-block;
-    }
-    img {
+    #container {
       width: 100%;
-      max-width: 1000px;
-      height: auto;
-      border: 5px solid #333;
+      height: 100%;
     }
-    .hotspot {
-      position: absolute;
-      cursor: pointer;
-      border: 2px dashed rgba(255,0,0,0.5);
-      background-color: rgba(255, 0, 0, 0.2);
-    }
-    .tooltip {
+
+    /* Overlay popup style */
+    #popup {
       position: fixed;
-      bottom: 20px;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       background: white;
-      border: 2px solid #333;
-      padding: 10px;
-      max-width: 600px;
-      font-size: 1.1em;
+      color: black;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      z-index: 10;
       display: none;
     }
+
+    #popup h2 {
+      margin-top: 0;
+    }
+
+    #popup-close {
+      margin-top: 15px;
+      background-color: red;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #popup-close:hover {
+      background-color: darkred;
+    }
   </style>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <!-- Panolens.js -->
+  <script src="https://cdn.jsdelivr.net/npm/panolens@0.12.0/build/panolens.min.js"></script>
 </head>
 <body>
-  <h1>Spot the Modern Item in the Mamak Shop</h1>
-  <p>Click on the odd modern item hidden in the left image to learn more about its history in Singapore!</p>
-  <div class="container">
-    <img src="your-image-file.jpg" alt="Mamak Shop Spot the Difference"><!-- Hotspots (relative to full image) -->
-<!-- NEWater Bottle -->
-<div class="hotspot" style="top: 85%; left: 27%; width: 4%; height: 8%;" onclick="showTooltip('The NEWater bottle you spotted is a product of Singapore’s advanced water recycling! First introduced in 2003, it symbolises Singapore’s push towards water sustainability.')"></div>
+  <div id="container"></div>
 
-<!-- IndoMee Mosaic Packet -->
-<div class="hotspot" style="top: 50%; left: 24%; width: 4%; height: 6%;" onclick="showTooltip('Indomie has gained cult popularity, but its current packaging and popularity in Singapore grew mainly in the 2010s through convenience store culture and late-night suppers.')"></div>
+  <!-- Overlay Popup -->
+  <div id="popup">
+    <h2>Hawker Culture</h2>
+    <p>Singapore's hawker centres are a big part of daily life and food heritage. Discover delicious dishes and vibrant community life!</p>
+    <button id="popup-close">Close</button>
+  </div>
 
-<!-- Milo Ice Can -->
-<div class="hotspot" style="top: 38%; left: 23.5%; width: 5%; height: 6%;" onclick="showTooltip('The MILO Ice can is a newer packaging style. MILO has been part of Singaporean breakfast since the 1950s, but this chilled version only became widespread in the 2000s.')"></div>
-
-<!-- JBL Bluetooth Speaker -->
-<div class="hotspot" style="top: 40%; left: 41%; width: 6%; height: 6%;" onclick="showTooltip('Portable Bluetooth speakers like this JBL didn’t exist during the classic mamak shop era. Back then, people used cassette players or radios to play music.')"></div>
-
-  </div>  <div class="tooltip" id="tooltip"></div>  <script>
-    function showTooltip(text) {
-      const tooltip = document.getElementById('tooltip');
-      tooltip.innerHTML = text;
-      tooltip.style.display = 'block';
+  <script>
+    // Create red circle icon
+    function createRedCircleIcon(size = 64) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'white';
+      ctx.stroke();
+      return canvas.toDataURL();
     }
-  </script></body>
+
+    const redIcon = createRedCircleIcon(128);
+
+    const panorama = new PANOLENS.ImagePanorama("hawker.jpg");
+
+    // Hotspot with layover popup
+    const hotspot = new PANOLENS.Infospot(500, redIcon);
+    hotspot.position.set(5000, 0, 0);
+    hotspot.addHoverText("Click me!");
+
+    // Show popup on click
+    hotspot.addEventListener('click', () => {
+      document.getElementById('popup').style.display = 'block';
+    });
+
+    panorama.add(hotspot);
+
+    const viewer = new PANOLENS.Viewer({
+      container: document.querySelector("#container"),
+      autoRotate: true,
+      autoRotateSpeed: 0.5,
+      controlBar: true
+    });
+
+    viewer.add(panorama);
+
+    // Close button
+    document.getElementById('popup-close').addEventListener('click', () => {
+      document.getElementById('popup').style.display = 'none';
+    });
+  </script>
+</body>
 </html>

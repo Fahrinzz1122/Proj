@@ -23,20 +23,35 @@
   <div id="container"></div>
 
   <script>
+    // Create red circle as a custom image
+    function createRedCircleIcon(size = 64) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = 'white';
+      ctx.stroke();
+      return canvas.toDataURL();
+    }
+
+    const redIcon = createRedCircleIcon(128); // Bigger and more visible
+
     const panorama = new PANOLENS.ImagePanorama("hawker.jpg");
 
-    // Create the hotspot
-    const hotspot = new PANOLENS.Infospot(300, PANOLENS.DataImage.Info); // Size, icon
-    hotspot.position.set(5000, 555, 666); // X, Y, Z position inside the sphere
-    hotspot.addHoverText("Click to learn about Hawker Culture");
+    // Create hotspot with custom red icon
+    const hotspot = new PANOLENS.Infospot(500, redIcon); // size, icon
+    hotspot.position.set(5000, 0, 0); // Adjust if needed
+    hotspot.addHoverText("Click me!");
 
-    // Optional: action when clicked
-    hotspot.addEventListener('click', function () {
-      alert("Hawker culture is part of Singapore's heritage!");
-      // Or you could redirect: window.location.href = "https://example.com";
+    hotspot.addEventListener('click', () => {
+      alert("Hawker culture is rich and delicious!");
     });
 
-    panorama.add(hotspot); // Add hotspot to the panorama
+    panorama.add(hotspot);
 
     const viewer = new PANOLENS.Viewer({
       container: document.querySelector("#container"),
